@@ -14,7 +14,8 @@ import 'package:greengrocer/src/pages/home/view/components/item_tile.dart';
 class HomeTab extends StatelessWidget {
   GlobalKey<CartIconKey> globalKeyCartItems = GlobalKey<CartIconKey>();
   late Function(GlobalKey) runAddToCartAnimation;
-  final _controller = Get.find<HomeController>();
+
+  final _searchController = TextEditingController();
 
   HomeTab({
     Key? key,
@@ -77,31 +78,50 @@ class HomeTab extends StatelessWidget {
                 horizontal: 20,
                 vertical: 10,
               ),
-              child: TextFormField(
-                onChanged: (value) {
-                  _controller.searchTitle.value = value;
-                },
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Colors.white,
-                  isDense: true,
-                  hintText: 'Pesquise aqui...',
-                  hintStyle: TextStyle(
-                    color: Colors.grey.shade400,
-                    fontSize: 14,
-                  ),
-                  prefixIcon: Icon(
-                    Icons.search,
-                    color: CustomColors.customContrastColor,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(60),
-                    borderSide: const BorderSide(
-                      width: 0,
-                      style: BorderStyle.none,
+              child: GetBuilder<HomeController>(
+                builder: (controller) {
+                  return TextFormField(
+                    controller: _searchController,
+                    onChanged: (value) {
+                      controller.searchTitle.value = value;
+                    },
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
+                      isDense: true,
+                      hintText: 'Pesquise aqui...',
+                      hintStyle: TextStyle(
+                        color: Colors.grey.shade400,
+                        fontSize: 14,
+                      ),
+                      suffixIcon: controller.searchTitle.value.isNotEmpty
+                          ? IconButton(
+                              onPressed: () {
+                                _searchController.clear();
+                                controller.searchTitle.value = '';
+                                FocusScope.of(context).unfocus();
+                              },
+                              icon: Icon(
+                                Icons.close,
+                                color: CustomColors.customContrastColor,
+                                size: 21,
+                              ),
+                            )
+                          : null,
+                      prefixIcon: Icon(
+                        Icons.search,
+                        color: CustomColors.customContrastColor,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(60),
+                        borderSide: const BorderSide(
+                          width: 0,
+                          style: BorderStyle.none,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
+                  );
+                },
               ),
             ),
             GetBuilder<HomeController>(
