@@ -14,6 +14,7 @@ import 'package:greengrocer/src/pages/home/view/components/item_tile.dart';
 class HomeTab extends StatelessWidget {
   GlobalKey<CartIconKey> globalKeyCartItems = GlobalKey<CartIconKey>();
   late Function(GlobalKey) runAddToCartAnimation;
+  final _controller = Get.find<HomeController>();
 
   HomeTab({
     Key? key,
@@ -77,6 +78,9 @@ class HomeTab extends StatelessWidget {
                 vertical: 10,
               ),
               child: TextFormField(
+                onChanged: (value) {
+                  _controller.searchTitle.value = value;
+                },
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: Colors.white,
