@@ -4,8 +4,17 @@ part 'item_model.g.dart';
 @JsonSerializable()
 class ItemModel {
   String id;
+
+  @JsonKey(
+    name: 'title',
+  )
   String itemName;
+
+  @JsonKey(
+    name: 'picture',
+  )
   String imgUrl;
+
   String unit;
   double price;
   String description;
@@ -18,4 +27,12 @@ class ItemModel {
     required this.price,
     required this.description,
   });
+
+  factory ItemModel.fromJson(Map<String, dynamic> json) =>
+      _$ItemModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ItemModelToJson(this);
+
+  @override
+  String toString() => 'CategoryModel(itemName: $itemName, id: $id)';
 }
