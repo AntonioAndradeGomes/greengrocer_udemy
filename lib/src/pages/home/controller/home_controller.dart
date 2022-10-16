@@ -34,11 +34,9 @@ class HomeController extends GetxController {
 
     debounce(
       searchTitle,
-      (_) {
-        update();
-      },
+      (_) => filterByTitle(),
       time: const Duration(
-        milliseconds: 600,
+        milliseconds: 500,
       ),
     );
 
@@ -99,6 +97,15 @@ class HomeController extends GetxController {
       'categoryId': currentCategory!.id,
       'itemsPerPage': itensPerPage,
     };
+
+    if (searchTitle.value.isNotEmpty) {
+      body['title'] = searchTitle.value;
+
+      if (currentCategory!.id == '') {
+        body.remove('categoryId');
+      }
+    }
+
     final result = await _homeRepository.getAllProducts(body);
     setLoading(
       false,
