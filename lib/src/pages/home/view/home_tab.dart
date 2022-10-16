@@ -3,7 +3,6 @@ import 'package:add_to_cart_animation/add_to_cart_icon.dart';
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:greengrocer/src/config/app_data.dart' as appData;
 import 'package:greengrocer/src/config/custom_colors.dart';
 import 'package:greengrocer/src/pages/common_widgets/app_name_widget.dart';
 import 'package:greengrocer/src/pages/common_widgets/custom_shimmer.dart';
@@ -162,11 +161,18 @@ class HomeTab extends StatelessWidget {
                             childAspectRatio: 9 / 11.5,
                           ),
                           itemCount: controller.allProducts.length,
-                          itemBuilder: (_, index) => ItemTile(
-                            itemModel: controller.allProducts[index],
-                            cardAnimationMethod: itemSelectedCardAnimations,
-                          ),
-                        )
+                          itemBuilder: (_, index) {
+                            //verificar se já esta apresentando o último item da lista
+                            if (((index + 1) ==
+                                    controller.allProducts.length) &&
+                                !controller.isLastPage) {
+                              controller.loadMoreProducts();
+                            }
+                            return ItemTile(
+                              itemModel: controller.allProducts[index],
+                              cardAnimationMethod: itemSelectedCardAnimations,
+                            );
+                          })
                       : GridView.count(
                           padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                           physics: const BouncingScrollPhysics(),
