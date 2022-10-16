@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:greengrocer/src/models/category_model.dart';
+import 'package:greengrocer/src/models/item_model.dart';
 import 'package:greengrocer/src/pages/home/repository/home_repository.dart';
 import 'package:greengrocer/src/services/utils_services.dart';
 
@@ -10,28 +11,36 @@ class HomeController extends GetxController {
   final _utilsServices = UtilsServices();
   final _homeRepository = HomeRepository();
 
+  bool isCategoryLoading = false;
+  bool isProductLoading = true;
   List<CategoryModel> allCategories = [];
-
-  bool isLoading = false;
 
   CategoryModel? currentCategory;
 
-  void setLoading(bool value) {
-    isLoading = value;
+  List<ItemModel> get allProducts => currentCategory?.items ?? [];
+
+  @override
+  void onInit() {
+    super.onInit();
+    getAllCategories();
+  }
+
+  void setLoading(bool value, {bool isProduct = false}) {
+    if (!isProduct) {
+      isCategoryLoading = value;
+    } else {
+      isProductLoading = value;
+    }
     update();
   }
 
   void selectCategory(CategoryModel category) {
     currentCategory = category;
     update();
-
+    if (currentCategory!.items.isNotEmpty) {
+      return;
+    }
     getAllProducts();
-  }
-
-  @override
-  void onInit() {
-    super.onInit();
-    getAllCategories();
   }
 
   Future<void> getAllCategories() async {
@@ -59,17 +68,24 @@ class HomeController extends GetxController {
   }
 
   Future<void> getAllProducts() async {
-    setLoading(true);
+    setLoading(
+      true,
+      isProduct: true,
+    );
     Map<String, dynamic> body = {
       'page': currentCategory!.pagination,
       'categoryId': currentCategory!.id,
       'itemsPerPage': itensPerPage,
     };
     final result = await _homeRepository.getAllProducts(body);
-    setLoading(false);
+    setLoading(
+      false,
+      isProduct: true,
+    );
     result.when(
       success: (data) {
         debugPrint('Lista de produtos: $data');
+        currentCategory!.items = data;
       },
       error: (message) {
         _utilsServices.showToast(

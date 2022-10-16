@@ -34,5 +34,6 @@ class ItemModel {
   Map<String, dynamic> toJson() => _$ItemModelToJson(this);
 
   @override
-  String toString() => 'CategoryModel(itemName: $itemName, id: $id)';
+  String toString() =>
+      'CategoryModel(itemName: $itemName, id: $id, price: $price)';
 }

@@ -109,7 +109,7 @@ class HomeTab extends StatelessWidget {
                     right: 15,
                   ),
                   height: 40,
-                  child: !controller.isLoading
+                  child: !controller.isCategoryLoading
                       ? ListView.separated(
                           scrollDirection: Axis.horizontal,
                           itemBuilder: (_, index) => CategoryTile(
@@ -150,7 +150,7 @@ class HomeTab extends StatelessWidget {
             GetBuilder<HomeController>(
               builder: (controller) {
                 return Expanded(
-                  child: !controller.isLoading
+                  child: !controller.isProductLoading
                       ? GridView.builder(
                           padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                           physics: const BouncingScrollPhysics(),
@@ -161,9 +161,9 @@ class HomeTab extends StatelessWidget {
                             crossAxisSpacing: 10,
                             childAspectRatio: 9 / 11.5,
                           ),
-                          itemCount: appData.items.length,
+                          itemCount: controller.allProducts.length,
                           itemBuilder: (_, index) => ItemTile(
-                            itemModel: appData.items[index],
+                            itemModel: controller.allProducts[index],
                             cardAnimationMethod: itemSelectedCardAnimations,
                           ),
                         )
