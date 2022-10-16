@@ -123,4 +123,42 @@ class HomeController extends GetxController {
       canLoad: false,
     );
   }
+
+  void filterByTitle() {
+    //Apagar todos os produtos de todas as categorias
+    for (var category in allCategories) {
+      category.items.clear();
+      category.pagination = 0;
+    }
+
+    if (searchTitle.value.isEmpty) {
+      allCategories.removeAt(0);
+    } else {
+      //verificar se a categoria 'Todos' já existe
+      CategoryModel? c = allCategories.firstWhereOrNull(
+        (element) => element.id == '',
+      );
+      if (c == null) {
+        //criar uma nova categoria com 'Todos'
+        final allProductsCategory = CategoryModel(
+          title: 'Todos',
+          id: '',
+          items: [],
+          pagination: 0,
+        );
+
+        //adicionar allCategory na primeira posição da lista de categoria
+        allCategories.insert(
+          0,
+          allProductsCategory,
+        );
+      } else {
+        c.items.clear();
+        c.pagination = 0;
+      }
+    }
+    currentCategory = allCategories.first;
+    update();
+    getAllProducts();
+  }
 }
