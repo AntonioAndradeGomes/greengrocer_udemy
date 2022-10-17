@@ -9,6 +9,7 @@ void main() {
 
   //injetar o AuthController para acessar onde quiser
   Get.put(AuthController());
+
   runApp(const MyApp());
 }
 
