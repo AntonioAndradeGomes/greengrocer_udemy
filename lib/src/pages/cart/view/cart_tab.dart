@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:greengrocer/src/config/app_data.dart' as appData;
 import 'package:greengrocer/src/config/custom_colors.dart';
-import 'package:greengrocer/src/models/cart_item_model.dart';
+import 'package:greengrocer/src/pages/cart/controller/cart_controller.dart';
 import 'package:greengrocer/src/pages/cart/view/components/cart_tile.dart';
-
 import 'package:greengrocer/src/pages/common_widgets/payment_dialog.dart';
 import 'package:greengrocer/src/services/utils_services.dart';
 
@@ -16,15 +16,6 @@ class CartTab extends StatefulWidget {
 
 class _CartTabState extends State<CartTab> {
   final utilsService = UtilsServices();
-
-  void removeItemFromCart(CartItemModel cartItem) {
-    setState(() {
-      appData.cartItens.remove(cartItem);
-      utilsService.showToast(
-        message: '${cartItem.item.itemName} removido(a) do carrinho!',
-      );
-    });
-  }
 
   double cartTotalPrice() {
     double total = 0;
@@ -45,12 +36,16 @@ class _CartTabState extends State<CartTab> {
       body: Column(
         children: [
           Expanded(
-            child: ListView.builder(
-              itemCount: appData.cartItens.length,
-              itemBuilder: (_, index) => CartTile(
-                item: appData.cartItens[index],
-                remove: removeItemFromCart,
-              ),
+            child: GetBuilder<CartController>(
+              builder: (controller) {
+                return ListView.builder(
+                  itemCount: controller.cartItems.length,
+                  itemBuilder: (_, index) => CartTile(
+                    item: controller.cartItems[index],
+                    //remove: removeItemFromCart,
+                  ),
+                );
+              },
             ),
           ),
           const SizedBox(
@@ -80,15 +75,19 @@ class _CartTabState extends State<CartTab> {
                     fontSize: 12,
                   ),
                 ),
-                Text(
-                  utilsService.priceCurrency(
-                    cartTotalPrice(),
-                  ),
-                  style: TextStyle(
-                    fontSize: 25,
-                    color: CustomColors.customSwatchColor,
-                    fontWeight: FontWeight.bold,
-                  ),
+                GetBuilder<CartController>(
+                  builder: (controller) {
+                    return Text(
+                      utilsService.priceCurrency(
+                        controller.cartTotalPrice(),
+                      ),
+                      style: TextStyle(
+                        fontSize: 25,
+                        color: CustomColors.customSwatchColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    );
+                  },
                 ),
                 const SizedBox(
                   height: 10,
