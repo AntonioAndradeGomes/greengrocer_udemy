@@ -85,14 +85,17 @@ final List<CartItemModel> cartItens = [
   CartItemModel(
     item: apple,
     quantity: 2,
+    id: '',
   ),
   CartItemModel(
     item: kiwi,
     quantity: 5,
+    id: '',
   ),
   CartItemModel(
     item: mango,
     quantity: 1,
+    id: '',
   ),
 ];
 
@@ -123,10 +126,12 @@ List<OrderModel> orders = [
       CartItemModel(
         item: apple,
         quantity: 2,
+        id: '',
       ),
       CartItemModel(
         item: mango,
         quantity: 2,
+        id: '',
       ),
     ],
   ),
@@ -146,6 +151,7 @@ List<OrderModel> orders = [
     items: [
       CartItemModel(
         item: guava,
+        id: '',
         quantity: 1,
       ),
     ],
