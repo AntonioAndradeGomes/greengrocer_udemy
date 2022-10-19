@@ -15,15 +15,7 @@ class CartTab extends StatefulWidget {
 }
 
 class _CartTabState extends State<CartTab> {
-  final utilsService = UtilsServices();
-
-  double cartTotalPrice() {
-    double total = 0;
-    for (var item in appData.cartItens) {
-      total += item.totalPrice;
-    }
-    return total;
-  }
+  final _utilsService = UtilsServices();
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +30,21 @@ class _CartTabState extends State<CartTab> {
           Expanded(
             child: GetBuilder<CartController>(
               builder: (controller) {
+                if (controller.cartItems.isEmpty) {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.remove_shopping_cart,
+                        color: CustomColors.customSwatchColor,
+                        size: 60,
+                      ),
+                      const Text(
+                        'Não há itens no carrinho',
+                      ),
+                    ],
+                  );
+                }
                 return ListView.builder(
                   itemCount: controller.cartItems.length,
                   itemBuilder: (_, index) => CartTile(
@@ -78,7 +85,7 @@ class _CartTabState extends State<CartTab> {
                 GetBuilder<CartController>(
                   builder: (controller) {
                     return Text(
-                      utilsService.priceCurrency(
+                      _utilsService.priceCurrency(
                         controller.cartTotalPrice(),
                       ),
                       style: TextStyle(
@@ -111,7 +118,7 @@ class _CartTabState extends State<CartTab> {
                           ),
                         );
                       } else {
-                        utilsService.showToast(
+                        _utilsService.showToast(
                           message: 'Pedido não confirmado!',
                           isError: true,
                         );

@@ -41,7 +41,7 @@ class BaseScreen extends StatelessWidget {
               icon: Icon(
                 Icons.list,
               ),
-              label: 'Pedidos)',
+              label: 'Pedidos',
             ),
             BottomNavigationBarItem(
               icon: Icon(

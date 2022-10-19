@@ -3,4 +3,5 @@ abstract class AppRoutes {
   static const String signUpRoute = '/signup';
   static const String splashRoute = '/splash';
   static const String baseRoute = '/';
+  static const String productRoute = '/product';
 }

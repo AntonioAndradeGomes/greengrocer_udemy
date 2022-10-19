@@ -31,4 +31,51 @@ class CartRepository {
           'Ocorreu um erro ao recuperar os itens do carrinho');
     }
   }
+
+  Future<CartResult<String>> addItemToCart({
+    required String userId,
+    required String token,
+    required String productId,
+    required int quantity,
+  }) async {
+    final result = await _httpManager.restRequest(
+      url: Endpoints.addItemToCart,
+      method: HttpMethods.post,
+      body: {
+        'user': userId,
+        'quantity': quantity,
+        'productId': productId,
+      },
+      headers: {
+        'X-Parse-Session-Token': token,
+      },
+    );
+
+    if (result['result'] != null) {
+      return CartResult<String>.success(result['result']['id']);
+    } else {
+      return CartResult<String>.error(
+        'Não foi possível adicionar o item no carrinho',
+      );
+    }
+  }
+
+  Future<bool> changeItemQuantity({
+    required String token,
+    required String cartItemId,
+    required int quantity,
+  }) async {
+    final result = await _httpManager.restRequest(
+      url: Endpoints.changeItemQuantity,
+      method: HttpMethods.post,
+      body: {
+        'cartItemId': cartItemId,
+        'quantity': quantity,
+      },
+      headers: {
+        'X-Parse-Session-Token': token,
+      },
+    );
+    return result.isEmpty;
+  }
 }

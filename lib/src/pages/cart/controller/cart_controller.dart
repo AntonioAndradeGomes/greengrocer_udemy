@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:greengrocer/src/models/cart_item_model.dart';
+import 'package:greengrocer/src/models/item_model.dart';
 import 'package:greengrocer/src/pages/auth/controllers/auth_controller.dart';
 import 'package:greengrocer/src/pages/cart/repository/cart_repository.dart';
 import 'package:greengrocer/src/services/utils_services.dart';
@@ -43,5 +44,92 @@ class CartController extends GetxController {
         );
       },
     );
+  }
+
+  int _getItemIndex(ItemModel item) {
+    return cartItems.indexWhere((element) => element.item.id == item.id);
+  }
+
+  Future<void> addItemToCart({
+    required ItemModel item,
+    int quantity = 1,
+  }) async {
+    int itemIndex = _getItemIndex(item);
+    if (itemIndex >= 0) {
+      //existe item na listagem
+      //recuperar item na listam e adicionar a quantidade
+      final product = cartItems[itemIndex];
+      await changeItemQuantity(
+        itemModel: product,
+        quantity: (product.quantity + quantity),
+      );
+    } else {
+      //não existe
+      final cartResult = await _cartRepository.addItemToCart(
+        userId: _authController.user.id!,
+        token: _authController.user.token!,
+        productId: item.id,
+        quantity: quantity,
+      );
+      cartResult.when(
+        success: (cartItemId) {
+          cartItems.add(
+            CartItemModel(
+              id: cartItemId,
+              item: item,
+              quantity: quantity,
+            ),
+          );
+        },
+        error: (message) {
+          _utilsSerices.showToast(
+            message: message,
+            isError: true,
+          );
+        },
+      );
+    }
+    update();
+  }
+
+  Future<bool> changeItemQuantity({
+    required CartItemModel itemModel,
+    required int quantity,
+  }) async {
+    final result = await _cartRepository.changeItemQuantity(
+      token: _authController.user.token!,
+      cartItemId: itemModel.id,
+      quantity: quantity,
+    );
+
+    if (result) {
+      if (quantity == 0) {
+        cartItems.removeWhere((element) => element.id == itemModel.id);
+      } else {
+        cartItems.firstWhere((element) => element.id == itemModel.id).quantity =
+            quantity;
+      }
+      update();
+    } else {
+      _utilsSerices.showToast(
+        message: 'Ocorreu um erro ao alterar a quantidade do produto',
+        isError: true,
+      );
+    }
+
+    return result;
+  }
+
+  //retornando a quantidade de itens de forma unitária
+  int getCartTotalItems() {
+    return cartItems.isEmpty
+        ? 0
+        : cartItems
+            .map(
+              (e) => e.quantity,
+            )
+            .reduce(
+              (value, element) => value + element,
+            );
   }
 }
