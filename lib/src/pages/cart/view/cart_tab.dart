@@ -16,6 +16,7 @@ class CartTab extends StatefulWidget {
 
 class _CartTabState extends State<CartTab> {
   final _utilsService = UtilsServices();
+  final _cartController = Get.find<CartController>();
 
   @override
   Widget build(BuildContext context) {
@@ -99,35 +100,37 @@ class _CartTabState extends State<CartTab> {
                 const SizedBox(
                   height: 10,
                 ),
-                SizedBox(
-                  height: 50,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: CustomColors.customSwatchColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                    ),
-                    onPressed: () async {
-                      bool? result = await showOrderConfirmation();
-                      if (result ?? false) {
-                        showDialog(
-                          context: context,
-                          builder: (_) => PaymentDialog(
-                            order: appData.orders.first,
+                GetBuilder<CartController>(
+                  builder: (controller) {
+                    return SizedBox(
+                      height: 50,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          primary: CustomColors.customSwatchColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
                           ),
-                        );
-                      } else {
-                        _utilsService.showToast(
-                          message: 'Pedido não confirmado!',
-                          isError: true,
-                        );
-                      }
-                    },
-                    child: const Text(
-                      'Concluir pedido',
-                    ),
-                  ),
+                        ),
+                        onPressed: controller.isCheckoutLoading
+                            ? null
+                            : () async {
+                                bool? result = await showOrderConfirmation();
+                                if (result ?? false) {
+                                  _cartController.checkoutCart();
+                                } else {
+                                  _utilsService.showToast(
+                                    message: 'Pedido não confirmado',
+                                  );
+                                }
+                              },
+                        child: controller.isCheckoutLoading
+                            ? const CircularProgressIndicator()
+                            : const Text(
+                                'Concluir pedido',
+                              ),
+                      ),
+                    );
+                  },
                 ),
               ],
             ),

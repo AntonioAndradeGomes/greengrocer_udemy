@@ -1,8 +1,12 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:greengrocer/src/models/cart_item_model.dart';
 import 'package:greengrocer/src/models/item_model.dart';
+import 'package:greengrocer/src/models/order_model.dart';
 import 'package:greengrocer/src/pages/auth/controllers/auth_controller.dart';
 import 'package:greengrocer/src/pages/cart/repository/cart_repository.dart';
+import 'package:greengrocer/src/pages/cart/result/cart_result.dart';
+import 'package:greengrocer/src/pages/common_widgets/payment_dialog.dart';
 import 'package:greengrocer/src/services/utils_services.dart';
 
 class CartController extends GetxController {
@@ -11,6 +15,8 @@ class CartController extends GetxController {
   final _utilsSerices = UtilsServices();
 
   List<CartItemModel> cartItems = [];
+
+  bool isCheckoutLoading = false;
 
   @override
   void onInit() {
@@ -131,5 +137,37 @@ class CartController extends GetxController {
             .reduce(
               (value, element) => value + element,
             );
+  }
+
+  void setCheckoutLoading(bool value) {
+    isCheckoutLoading = value;
+    update();
+  }
+
+  Future<void> checkoutCart() async {
+    setCheckoutLoading(true);
+    final result = await _cartRepository.checkoutCart(
+      token: _authController.user.token!,
+      total: cartTotalPrice(),
+    );
+    setCheckoutLoading(false);
+    result.when(
+      success: (order) {
+        cartItems.clear();
+        update();
+        showDialog(
+          context: Get.context!,
+          builder: (_) => PaymentDialog(
+            order: order,
+          ),
+        );
+      },
+      error: (message) {
+        _utilsSerices.showToast(
+          message: message,
+          isError: true,
+        );
+      },
+    );
   }
 }
