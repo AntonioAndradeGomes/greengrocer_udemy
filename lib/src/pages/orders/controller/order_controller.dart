@@ -1,5 +1,4 @@
 import 'package:get/get.dart';
-import 'package:greengrocer/src/config/app_data.dart';
 import 'package:greengrocer/src/models/order_model.dart';
 import 'package:greengrocer/src/pages/auth/controllers/auth_controller.dart';
 import 'package:greengrocer/src/pages/orders/repository/orders_repository.dart';
