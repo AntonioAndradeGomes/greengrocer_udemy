@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:greengrocer/src/models/cart_item_model.dart';
 import 'package:greengrocer/src/models/item_model.dart';
-import 'package:greengrocer/src/models/order_model.dart';
 import 'package:greengrocer/src/pages/auth/controllers/auth_controller.dart';
 import 'package:greengrocer/src/pages/cart/repository/cart_repository.dart';
-import 'package:greengrocer/src/pages/cart/result/cart_result.dart';
 import 'package:greengrocer/src/pages/common_widgets/payment_dialog.dart';
 import 'package:greengrocer/src/services/utils_services.dart';
 

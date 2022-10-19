@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:greengrocer/src/config/app_data.dart' as appData;
 import 'package:greengrocer/src/config/custom_colors.dart';
 import 'package:greengrocer/src/pages/cart/controller/cart_controller.dart';
 import 'package:greengrocer/src/pages/cart/view/components/cart_tile.dart';
-import 'package:greengrocer/src/pages/common_widgets/payment_dialog.dart';
 import 'package:greengrocer/src/services/utils_services.dart';
 
 class CartTab extends StatefulWidget {

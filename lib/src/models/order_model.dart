@@ -8,6 +8,9 @@ part 'order_model.g.dart';
 class OrderModel {
   String id;
 
+  @JsonKey(
+    name: 'createdAt',
+  )
   DateTime? createdDateTime;
 
   @JsonKey(
@@ -49,4 +52,6 @@ class OrderModel {
   @override
   String toString() =>
       'OrderModel(id: $id, createdDateTime: $createdDateTime, overdueDateTime: $overdueDateTime, items: $items, status: $status, copyAndPaste: $copyAndPaste, total: $total, qrCodeImage: $qrCodeImage)';
+
+  bool get isOverDue => overdueDateTime.isBefore(DateTime.now());
 }
