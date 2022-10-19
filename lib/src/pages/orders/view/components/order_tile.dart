@@ -22,132 +22,133 @@ class OrderTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
       ),
       child: Theme(
-          data: Theme.of(context).copyWith(
-            dividerColor: Colors.transparent,
+        data: Theme.of(context).copyWith(
+          dividerColor: Colors.transparent,
+        ),
+        child: GetBuilder<OrderController>(
+          init: OrderController(
+            order: order,
           ),
-          child: GetBuilder<OrderController>(
-            init: OrderController(
-              order: order,
-            ),
-            global: false,
-            builder: (controller) {
-              return ExpansionTile(
-                //initiallyExpanded: order.status == 'pending_payment',
-                onExpansionChanged: (value) {
-                  if (value && order.items.isEmpty) {
-                    controller.getOrderItem();
-                  }
-                },
-                childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                title: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Pedido: ${order.id}',
+          global: false,
+          builder: (controller) {
+            return ExpansionTile(
+              onExpansionChanged: (value) {
+                if (value && order.items.isEmpty) {
+                  controller.getOrderItem();
+                }
+              },
+              childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              title: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Pedido: ${order.id}',
+                  ),
+                  Text(
+                    utilsServices.formatDateTime(order.createdDateTime!),
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Colors.black,
                     ),
-                    Text(
-                      utilsServices.formatDateTime(order.createdDateTime!),
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.black,
+                  ),
+                ],
+              ),
+              expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
+              children: controller.isLoading
+                  ? [
+                      Container(
+                        height: 80,
+                        alignment: Alignment.center,
+                        child: const CircularProgressIndicator(),
                       ),
-                    ),
-                  ],
-                ),
-                expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
-                children: controller.isLoading
-                    ? [
-                        Container(
-                          height: 80,
-                          alignment: Alignment.center,
-                          child: const CircularProgressIndicator(),
+                    ]
+                  : [
+                      IntrinsicHeight(
+                        child: Row(
+                          children: [
+                            Expanded(
+                              flex: 3,
+                              child: SizedBox(
+                                height: 150,
+                                child: ListView(
+                                  children: controller.order.items
+                                      .map(
+                                        (orderItem) => _OrderItemWidget(
+                                          utilsServices: utilsServices,
+                                          item: orderItem,
+                                        ),
+                                      )
+                                      .toList(),
+                                ),
+                              ),
+                            ),
+                            VerticalDivider(
+                              color: Colors.grey.shade300,
+                              thickness: 2,
+                              width: 8,
+                            ),
+                            Expanded(
+                              flex: 2,
+                              child: OrderStatusWidget(
+                                isOverdue: order.overdueDateTime.isBefore(
+                                  DateTime.now(),
+                                ),
+                                status: order.status,
+                              ),
+                            ),
+                          ],
                         ),
-                      ]
-                    : [
-                        IntrinsicHeight(
-                          child: Row(
-                            children: [
-                              Expanded(
-                                flex: 3,
-                                child: SizedBox(
-                                  height: 150,
-                                  child: ListView(
-                                    children: order.items
-                                        .map(
-                                          (orderItem) => _OrderItemWidget(
-                                            utilsServices: utilsServices,
-                                            item: orderItem,
-                                          ),
-                                        )
-                                        .toList(),
-                                  ),
-                                ),
-                              ),
-                              VerticalDivider(
-                                color: Colors.grey.shade300,
-                                thickness: 2,
-                                width: 8,
-                              ),
-                              Expanded(
-                                flex: 2,
-                                child: OrderStatusWidget(
-                                  isOverdue: order.overdueDateTime
-                                      .isBefore(DateTime.now()),
-                                  status: order.status,
-                                ),
-                              ),
-                            ],
+                      ),
+                      Text.rich(
+                        TextSpan(
+                          style: const TextStyle(
+                            fontSize: 20,
                           ),
-                        ),
-                        Text.rich(
-                          TextSpan(
-                            style: const TextStyle(
-                              fontSize: 20,
+                          children: [
+                            const TextSpan(
+                              text: 'Total ',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                            children: [
-                              const TextSpan(
-                                text: 'Total ',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
+                            TextSpan(
+                              text: utilsServices.priceCurrency(order.total),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Visibility(
+                        visible: order.status == 'pending_payment' &&
+                            !order.isOverDue,
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (_) => PaymentDialog(
+                                order: order,
                               ),
-                              TextSpan(
-                                text: utilsServices.priceCurrency(order.total),
-                              ),
-                            ],
+                            );
+                          },
+                          icon: Image.asset(
+                            'assets/app_images/pix.png',
+                            height: 18,
                           ),
-                        ),
-                        Visibility(
-                          visible: order.status == 'pending_payment' &&
-                              !order.isOverDue,
-                          child: ElevatedButton.icon(
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (_) => PaymentDialog(
-                                  order: order,
-                                ),
-                              );
-                            },
-                            icon: Image.asset(
-                              'assets/app_images/pix.png',
-                              height: 18,
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                            ),
-                            label: const Text(
-                              'Ver QR Code Pix',
+                          style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
                             ),
                           ),
+                          label: const Text(
+                            'Ver QR Code Pix',
+                          ),
                         ),
-                      ],
-              );
-            },
-          )),
+                      ),
+                    ],
+            );
+          },
+        ),
+      ),
     );
   }
 }

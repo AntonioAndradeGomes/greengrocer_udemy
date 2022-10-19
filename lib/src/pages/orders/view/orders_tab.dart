@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:get/get_state_manager/src/simple/get_state.dart';
+import 'package:get/get.dart';
 import 'package:greengrocer/src/pages/orders/controller/all_orders_controller.dart';
 import 'package:greengrocer/src/pages/orders/view/components/order_tile.dart';
 
@@ -8,6 +8,7 @@ class OrdersTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Get.find<AllOrdersController>().getAllOrders();
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -16,16 +17,19 @@ class OrdersTab extends StatelessWidget {
       ),
       body: GetBuilder<AllOrdersController>(
         builder: (controller) {
-          return ListView.separated(
-            padding: const EdgeInsets.all(16),
-            physics: const BouncingScrollPhysics(),
-            itemBuilder: (_, index) => OrderTile(
-              order: controller.allOrders[index],
+          return RefreshIndicator(
+            onRefresh: () => controller.getAllOrders(),
+            child: ListView.separated(
+              padding: const EdgeInsets.all(16),
+              physics: const AlwaysScrollableScrollPhysics(),
+              itemBuilder: (_, index) => OrderTile(
+                order: controller.allOrders[index],
+              ),
+              separatorBuilder: (_, __) => const SizedBox(
+                height: 10,
+              ),
+              itemCount: controller.allOrders.length,
             ),
-            separatorBuilder: (_, __) => const SizedBox(
-              height: 10,
-            ),
-            itemCount: controller.allOrders.length,
           );
         },
       ),
